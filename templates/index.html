@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <title>Document</title>
+    <script>
+
+        function get_bots() {
+            clean();
+            $.ajax({
+                type: "GET",
+                url: "/get_bots_for_draw",
+                success: function (response) {
+                    var bots = jQuery.parseJSON(response);
+                    for (let i = 0; i < bots.length; i++)
+                        draw(bots[i]);
+                }
+            });
+        }
+
+        function clean() {
+            var canvas = document.getElementById('canvas');
+            if (canvas.getContext)
+                var ctx = canvas.getContext('2d');
+            ctx.fillStyle = "#F7F7F7";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function draw(bot) {
+            var canvas = document.getElementById('canvas');
+            if (canvas.getContext) {
+                var ctx = canvas.getContext('2d');
+
+                var circle = new Path2D();
+
+                ctx.fillStyle = "rgb(" +
+                    bot['color']['r'] + ", " +
+                    bot['color']['g'] + ", " +
+                    bot['color']['b'] + ")";
+
+                circle.arc(bot['coordinate']['x'], bot['coordinate']['y'], 20 + bot['score'], 0, 2 * Math.PI);
+                ctx.fill(circle);
+
+                ctx.textBaseline = "middle";
+                ctx.textAlign = "center";
+                ctx.font = 'bold 30px sans-serif';
+                ctx.fillStyle = "rgb(" +
+                    (256 - bot['color']['r']) + ", " +
+                    (256 - bot['color']['g']) + ", " +
+                    (256 - bot['color']['b']) + ")";
+                ctx.fillText(bot['name'], bot['coordinate']['x'], bot['coordinate']['y'])
+            }
+        }
+
+        function main() {
+            get_bots();
+            setInterval(get_bots, 2000);
+        }
+    </script>
+</head>
+
+<body onload="main();">
+    <canvas id="canvas" width="1920px" height="1080px">
+
+    </canvas>
+
+</body>
+
+</html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/token.css') }}">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="message"></div>
+    <div class="form-wrap">
+        <div class="logo">
+            <h1>SibHack</h1>
+            <img src="{{ url_for('static', filename='img/logo.png') }}">
+        </div>
+        <form method="POST" action="/get_token">
+            <div>
+                <label for="name">Название команды</label>
+                <input type="text" name="name" required>
+            </div>
+            <div>
+                <label for="pass">Пароль</label>
+                <input type="password" name="pass" required>
+            </div>
+            <button type="button" onclick="sent();">Получить токен</button>
+        </form>
+    </div>
+    <script type="text/javascript">
+        function newTop(px) {
+            $('.message').animate({
+                top: px
+            });
+        }
+        function sent() {
+            $.ajax({
+                type: "POST",
+                url: "/get_token",
+                data: $('form').serialize(),
+                success: function (resp) {
+                    if (resp != 'Error') {
+                        $('.message').attr('id', 'good');
+                        $('.message').html('<h2>Ваш токен: ' + resp + '</h2>');
+                    } else {
+                        $('.message').attr('id', 'error');
+                        $('.message').html('<h2>Не верный пароль</h2>');
+                    }
+                    newTop(0);
+                    setTimeout(newTop, 10000, -200);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

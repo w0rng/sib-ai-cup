@@ -1,0 +1,84 @@
+  *{box-sizing:border-box}
+  @import 'https://fonts.googleapis.com/css?family=Open+Sans:400,400i&subset=cyrillic';
+  body {
+    margin: 0;
+    background: #F7F7F7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Open Sans', sans-serif;
+  }
+  .message  {
+    position: fixed;
+    left: 30%;
+    top: -200px;
+    text-align: center;
+    color: #fff;
+    width: 40%;
+    border-radius: 0 0 20px 20px;
+  }
+  .message#good {
+    background: #8ABD64;
+  }
+  .message#error {
+    background: #BC6465;
+  }
+  .form-wrap {
+    width: 550px;
+    background: #4B7BB8;
+    border-radius: 20px;
+  }
+  .logo{
+    width: 240px;
+    float: left;
+    text-align: center;
+    padding: 30px;
+  }
+  form {
+    background: white;
+    float: left;
+    width: calc(100% - 240px);
+    padding: 30px;
+    border-radius: 0 20px 20px 0;
+    color: #7F7E7C; 
+  }
+  form div {
+    margin-bottom: 15px;
+    position: relative;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 400;
+    color: white;
+    position: relative;
+    margin-top: 50px;
+  }
+  label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 10px 15px;
+    border-width: 0;
+    background: #e6e6e6;
+    outline: none;
+    margin: 0;
+  }
+  input[type="text"]:focus, input[type="password"]:focus {
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+  }
+  button {
+    padding: 10px 0;
+    border-width: 0;
+    display: block;
+    width: 140px;
+    margin: 25px auto 0;
+    background: #8ABD64;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    text-transform: uppercase;
+  }
