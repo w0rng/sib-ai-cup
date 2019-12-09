@@ -1,6 +1,8 @@
 from hashlib import sha256
 from random import randint
-from db import teams, bots
+from db import TEAMS, BOTS, FOOD
+from time import sleep
+
 import json
 
 # Генерация токена
@@ -9,19 +11,19 @@ def get_token(team_name: str, password: str) -> str:
     pass_and_salt = password + team_name[::-2]
     token = sha256(str.encode(pass_and_salt)).hexdigest()[:16]
 
-    if teams.count_documents({'name': team_name}) == 0:
+    if TEAMS.count_documents({'name': team_name}) == 0:
         __registration_team(team_name, token)
         __registration_bot(team_name)
         return token
-    elif teams.count_documents({'name': team_name, 'token': token}) == 1:
+    elif TEAMS.count_documents({'name': team_name, 'token': token}) == 1:
         return token
     else:
         return 'Error'
 
 
-def get_bots(private_api: bool = False) -> str:
+def get_BOTS(private_api: bool = False) -> str:
     result = []
-    for bot in bots.find():
+    for bot in BOTS.find():
         result.append({
             'score': bot['score'],
             'coordinate': bot['coordinate']
@@ -32,20 +34,27 @@ def get_bots(private_api: bool = False) -> str:
     return json.dumps(result)
 
 
-def bot_move(token: str, x: int, y: int) -> None:
-    team = teams.find_one({'token': token})
-    if team is None:
-        return 'Error! Не верный токен.'
+def add_food():
+    while 1:
+        print("add food")
+        sleep(5)
 
-    bot = bots.find_one({'name': team['name']})
+
+def bot_move(token: str, x: int, y: int) -> None:
     if abs(x) > 40 or abs(y) > 40:
-        return 'Error! Слишком большое расстояние.'
+        return 'Ошибка! Слишком большое расстояние.'
+
+    team_name = __get_team_name(token)
+    if (team_name):
+        return 'Ошибка! Не верный токен'
+
+    bot = BOTS.find_one({'name': team_name})
 
     new_x = (bot['coordinate']['x'] + x) % 1920
     new_y = (bot['coordinate']['y'] + y) % 1080
 
     
-    bots.update_one({'name': team['name']}, {'$set': {
+    BOTS.update_one({'name': team_name}, {'$set': {
         "coordinate" : {
             'x': new_x,
             'y': new_y
@@ -53,25 +62,29 @@ def bot_move(token: str, x: int, y: int) -> None:
     return 'good'
 
 def get_coordinate(token: str) -> None:
-    team = teams.find_one({'token': token})
-    if team is None:
-        return 'Error! Не верный токен.'
+    team_name = __get_team_name(token)
+    if (team_name):
+        return 'Ошибка! Не верный токен'
 
-    bot = bots.find_one({'name': team['name']})
+    bot = BOTS.find_one({'name': team_name})
     return json.dumps({
         'x': bot['coordinate']['x'],
         'y': bot['coordinate']['y']
     })
 
 
+def __get_team_name(token: str) -> str:
+    team = TEAMS.find_one({'token': token})
+    return team.get('name')
+
 def __registration_team(team_name: str, token: str) -> None:
-    teams.insert_one({
+    TEAMS.insert_one({
         'name': team_name,
         'token': token
     })
 
 def __registration_bot(team_name: str) -> None:
-    bots.insert_one({
+    BOTS.insert_one({
         'name': team_name,
         'score': 0,
         'color': {

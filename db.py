@@ -1,8 +1,8 @@
 from pymongo import MongoClient
 
 
-data_base = MongoClient('localhost', 27017).sibHack
-teams = data_base.Teams
-bots = data_base.Bots
-
+DATA_BASE = MongoClient('localhost', 27017).sibHack
+TEAMS = DATA_BASE.Teams
+BOTS = DATA_BASE.Bots
+FOOD = DATA_BASE.Food
 

@@ -1,9 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.8
 
 from flask import Flask, render_template, request
 import api
 from os import path, stat
 from flask.helpers import url_for
+from threading import Thread
 
 
 app = Flask(__name__)
@@ -66,4 +67,7 @@ def dated_url_for(endpoint, **values):
 
 
 if __name__ == "__main__":
+    add_food = Thread(target=api.add_food)
+    add_food.start()
     app.run()
+    add_food.join()
