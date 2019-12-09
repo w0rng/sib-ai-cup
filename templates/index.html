@@ -9,8 +9,10 @@
     <title>Document</title>
     <script>
 
+        var context; // переменная для хранения контекста
+        var container; // переменная для хранения canvas элемента
+
         function get_bots() {
-            clean();
             $.ajax({
                 type: "GET",
                 url: "/get_bots_for_draw",
@@ -22,52 +24,48 @@
             });
         }
 
-        function clean() {
-            var canvas = document.getElementById('canvas');
-            if (canvas.getContext)
-                var ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#F7F7F7";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
         function draw(bot) {
-            var canvas = document.getElementById('canvas');
-            if (canvas.getContext) {
-                var ctx = canvas.getContext('2d');
 
-                var circle = new Path2D();
+            context.fillStyle = "rgb(" +
+                bot['color']['r'] + ", " +
+                bot['color']['g'] + ", " +
+                bot['color']['b'] + ")";
 
-                ctx.fillStyle = "rgb(" +
-                    bot['color']['r'] + ", " +
-                    bot['color']['g'] + ", " +
-                    bot['color']['b'] + ")";
+            var circle = new Path2D();
+            circle.arc(bot['coordinate']['x'], bot['coordinate']['y'], 20 + bot['score'], 0, 2 * Math.PI);
+            context.fill(circle);
 
-                circle.arc(bot['coordinate']['x'], bot['coordinate']['y'], 20 + bot['score'], 0, 2 * Math.PI);
-                ctx.fill(circle);
+            context.textBaseline = "middle";
+            context.textAlign = "center";
+            context.font = 'bold 30px sans-serif';
+            context.fillStyle = "rgb(" +
+                (256 - bot['color']['r']) + ", " +
+                (256 - bot['color']['g']) + ", " +
+                (256 - bot['color']['b']) + ")";
+            context.fillText(bot['name'], bot['coordinate']['x'], bot['coordinate']['y'])
 
-                ctx.textBaseline = "middle";
-                ctx.textAlign = "center";
-                ctx.font = 'bold 30px sans-serif';
-                ctx.fillStyle = "rgb(" +
-                    (256 - bot['color']['r']) + ", " +
-                    (256 - bot['color']['g']) + ", " +
-                    (256 - bot['color']['b']) + ")";
-                ctx.fillText(bot['name'], bot['coordinate']['x'], bot['coordinate']['y'])
-            }
         }
 
-        function main() {
-            get_bots();
-            setInterval(get_bots, 2000);
+        window.onload = function () {
+            container = document.createElement("canvas"); // создаем canvas элемент 
+            container.width = 1900; // устанваливаем ширину
+            container.height = 950; // устанавливаем высоту
+
+            document.body.appendChild(container); // добавляем canvas в DOM
+            context = container.getContext('2d'); // получаем конткест
+            setInterval(function () {
+                context.fillStyle = '#F7F7F7'; // устанавливаем цвет заливки в черный
+                context.fillRect(0, 0, container.width, container.height); // собственно заливаем все черным
+
+                context.beginPath();
+                get_bots();
+                context.stroke();
+
+            }, 1000);
         }
     </script>
 </head>
 
-<body onload="main();">
-    <canvas id="canvas" width="1920px" height="1080px">
-
-    </canvas>
-
-</body>
+<body></body>
 
 </html>

@@ -3,9 +3,8 @@ from random import randint
 from db import teams, bots
 import json
 
+# Генерация токена
 def get_token(team_name: str, password: str) -> str:
-
-    # Генерация токена
     team_name = team_name.lower()
     pass_and_salt = password + team_name[::-2]
     token = sha256(str.encode(pass_and_salt)).hexdigest()[:16]
@@ -33,7 +32,39 @@ def get_bots(private_api: bool = False) -> str:
     return json.dumps(result)
 
 
-def __registration_team(team_name, token) -> None:
+def bot_move(token: str, x: int, y: int) -> None:
+    team = teams.find_one({'token': token})
+    if team is None:
+        return 'Error! Не верный токен.'
+
+    bot = bots.find_one({'name': team['name']})
+    if abs(x) > 40 or abs(y) > 40:
+        return 'Error! Слишком большое расстояние.'
+
+    new_x = (bot['coordinate']['x'] + x) % 1920
+    new_y = (bot['coordinate']['y'] + y) % 1080
+
+    
+    bots.update_one({'name': team['name']}, {'$set': {
+        "coordinate" : {
+            'x': new_x,
+            'y': new_y
+        }}})
+    return 'good'
+
+def get_coordinate(token: str) -> None:
+    team = teams.find_one({'token': token})
+    if team is None:
+        return 'Error! Не верный токен.'
+
+    bot = bots.find_one({'name': team['name']})
+    return json.dumps({
+        'x': bot['coordinate']['x'],
+        'y': bot['coordinate']['y']
+    })
+
+
+def __registration_team(team_name: str, token: str) -> None:
     teams.insert_one({
         'name': team_name,
         'token': token

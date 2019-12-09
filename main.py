@@ -7,31 +7,48 @@ from flask.helpers import url_for
 
 
 app = Flask(__name__)
-#app.secret_key = os.environ.get(["FLASK_KEY"])
+
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 # Форма получения токена
 @app.route('/token', methods=['GET'])
 def token():
     return render_template('token.html')
 
+
 # Генерация токена
 @app.route('/get_token', methods=['POST'])
 def get_token():
     return api.get_token(request.form['name'], request.form['pass'])
+
 
 # Список всех ботов
 @app.route('/get_bots', methods=['GET'])
 def get_bots():
     return api.get_bots()
 
+
+@app.route('/move', methods=['POST'])
+def move():
+    token = request.form['token']
+    x, y = int(request.form['x']), int(request.form['y'])
+    return api.bot_move(token, x, y)
+
+
+@app.route('/get_coordinate', methods=['POST'])
+def get_coordinate():
+    return api.get_coordinate(request.form['token'])
+
+
 # Список всех ботов с доп. параметрами
 @app.route('/get_bots_for_draw', methods=['GET'])
 def get_bots_for_draw():
     return api.get_bots(True)
+
 
 # Нужно, чтобы браузер не кэшировал статичные файлы
 @app.context_processor
